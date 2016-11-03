@@ -1,0 +1,14 @@
+{
+  "name": "web_server01",
+  "version": "1.0.0",
+  "description": "first study",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "GuJing",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.14.0"
+  }
+}
