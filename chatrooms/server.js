@@ -2,6 +2,7 @@ var http = require('http');
 var fs = require('fs');
 var path = require('path');
 var mime = require('mime');
+var chatServer = require('./lib/chat_server');
 var cache = {};  //cache是用来缓存文件内容的对象
 
 //404错误
@@ -20,8 +21,8 @@ function serveStatic(res, cache, absPath) {
     if(cache[absPath]) {  //检查文件是否缓存在内存中
         sendFile(res, absPath, cache[absPath]);  //从内存中返回文件
     } else {
-        fs.exists(absPath, function(exists) { //检查文件是否存在
-            if(exists) {
+        fs.stat(absPath, function(err, stat) { //检查文件是否存在
+            if(stat && stat.isFile()) {
                 fs.readFile(absPath, function(err, data) {
                     if(err) {
                         send404(res);
@@ -36,3 +37,23 @@ function serveStatic(res, cache, absPath) {
         })
     } 
 }
+
+//创建http服务器逻辑
+var server = http.createServer(function(req, res) {
+    var filePath = false;
+
+    if(req.url == '/') {
+        filePath = 'public/index.html';
+    } else {
+        filePath = 'public' + req.url;
+    }
+
+    var absPath = './' + filePath;
+    serveStatic(res, cache, absPath); //返回静态文件
+})
+
+server.listen(3000, function() {
+    console.log("Server listening on port 3000.");
+})
+
+chatServer.listen(server);
