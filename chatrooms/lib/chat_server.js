@@ -19,12 +19,12 @@ exports.listen = function(server) {
         handleRoomJoining(socket);
 
         //当用户发出请求时，向其提供已经被占用的聊天室的列表
-        socket.on('rooms', funtion() {
-            socket.emit('rooms', io.sockets.manager.rooms);
+        socket.on('rooms', function() {
+            socket.emit('rooms', io.of('/').adapter.rooms);
         });
         
         //定义用户断开连接后的清除逻辑
-        handleClientDisconnection(socket, nickNames, nameUsed);
+        handleClientDisconnection(socket, nickNames, namesUsed);
     })
 }
 
@@ -49,7 +49,7 @@ function joinRoom(socket, room) {
         text: nickNames[socket.id] + 'has joined' + room + '.'
     });
     
-    var usersInRoom = io.sockets.clients(room);
+    var usersInRoom = io.of('/').in(room).clients;;
     if(usersInRoom.length > 1) {
         var usersInRoomSummary = 'Users currently in ' + room + ': ';
         for(var index in usersInRoom) {
@@ -82,7 +82,7 @@ function handleNameChangeAttempts(socket, nickNames, namesUsed) {
                 message: 'Names cannot begin with "Guest".'
             });
         } else {
-            if(nameUsed.indexOf(name) == -1) {
+            if(namesUsed.indexOf(name) == -1) {
                 var previousName = nickNames[socket.id];
                 var previousNameIndex = namesUsed.indexOf(previousName);
                 namesUsed.push(name);
